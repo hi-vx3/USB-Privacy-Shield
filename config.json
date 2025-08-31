@@ -1,0 +1,56 @@
+{
+    "applications": [
+      {
+        "name": "mullvad_browser",
+        "source": "apps\\mullvad_browser\\MullvadBrowser.exe",
+        "type": "portable",
+        "url": "https://github.com/mullvad/mullvad-browser/releases/latest/download/MullvadBrowser-windows-x64-portable.exe",
+        "download_path": "apps\\downloads\\mullvad_browser.exe"
+      },
+      {
+        "name": "brave",
+        "source": "apps\\brave\\brave.exe",
+        "type": "portable",
+        "url": "https://laptop-updates.brave.com/latest/winx64",
+        "download_path": "apps\\downloads\\brave.exe"
+      },
+      {
+        "name": "mullvad_vpn",
+        "source": "apps\\mullvad_vpn\\MullvadVPN.exe",
+        "type": "portable",
+        "url": "https://github.com/mullvad/mullvadvpn-app/releases/latest/download/MullvadVPN-windows-x64.exe",
+        "download_path": "apps\\downloads\\mullvad_vpn.exe"
+      },
+      {
+        "name": "protonmail",
+        "source": "https://mail.proton.me",
+        "type": "url"
+      },
+      {
+        "name": "proton_drive",
+        "source": "https://drive.proton.me",
+        "type": "url"
+      },
+      {
+        "name": "xampp",
+        "source": "apps\\xampp\\xampp-control.exe",
+        "type": "portable",
+        "url": "https://sourceforge.net/projects/xampp/files/XAMPP%20Windows/8.2.12/xampp-windows-x64-8.2.12-0-VS16-installer.exe",
+        "download_path": "apps\\downloads\\xampp.exe"
+      },
+      {
+        "name": "vscode",
+        "source": "apps\\vscode\\Code.exe",
+        "type": "portable",
+        "url": "https://github.com/microsoft/vscode/releases/latest/download/VSCode-win32-x64.zip",
+        "download_path": "apps\\downloads\\vscode.zip"
+      },
+      {
+        "name": "git",
+        "source": "apps\\git\\cmd\\git.exe",
+        "type": "portable",
+        "url": "https://github.com/git-for-windows/git/releases/latest/download/PortableGit-2.46.0-64-bit.7z.exe",
+        "download_path": "apps\\downloads\\git.exe"
+      }
+    ]
+  }

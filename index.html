@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USB Privacy Shield - Technical Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', 'Monaco', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ff88;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background grid */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0,255,136,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,255,136,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .main-title {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00ff88, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0,255,136,0.5);
+            margin-bottom: 10px;
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            from { text-shadow: 0 0 30px rgba(0,255,136,0.5); }
+            to { text-shadow: 0 0 50px rgba(0,255,136,0.8); }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #66ccff;
+            margin-bottom: 30px;
+        }
+
+        .terminal-window {
+            background: rgba(0,0,0,0.8);
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0,255,136,0.3);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            background: linear-gradient(90deg, #00ff88, #00d4ff);
+            padding: 10px 20px;
+            color: #000;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .terminal-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .terminal-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .btn-close { background: #ff5f56; }
+        .btn-minimize { background: #ffbd2e; }
+        .btn-maximize { background: #27ca3f; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .terminal-content {
+            padding: 30px;
+        }
+
+        .command-section {
+            margin-bottom: 30px;
+        }
+
+        .command-title {
+            color: #00d4ff;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .command-icon {
+            width: 20px;
+            height: 20px;
+            background: #00ff88;
+            border-radius: 3px;
+            animation: rotate 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .command-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .command-card {
+            background: rgba(0,20,40,0.6);
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .command-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,255,136,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .command-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,255,136,0.3);
+            border-color: #00d4ff;
+        }
+
+        .command-card:hover::before {
+            left: 100%;
+        }
+
+        .command-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 8px;
+        }
+
+        .command-desc {
+            font-size: 0.9rem;
+            color: #99ccff;
+            line-height: 1.4;
+        }
+
+        .warning-section {
+            background: rgba(255,50,50,0.1);
+            border: 2px solid #ff4444;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .warning-title {
+            color: #ff6666;
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            animation: warningBlink 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes warningBlink {
+            from { opacity: 1; }
+            to { opacity: 0.7; }
+        }
+
+        .warning-text {
+            color: #ffaaaa;
+            line-height: 1.5;
+        }
+
+        .status-bar {
+            background: rgba(0,0,0,0.9);
+            border: 1px solid #00ff88;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+            font-family: monospace;
+        }
+
+        .status-line {
+            color: #00ff88;
+            margin-bottom: 5px;
+        }
+
+        .status-line:last-child {
+            margin-bottom: 0;
+        }
+
+        .blinking-cursor {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #00ff88;
+            border-radius: 50%;
+            animation: float 15s linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2rem;
+            }
+            
+            .command-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-particles" id="particles"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1 class="main-title">USB Privacy Shield</h1>
+            <p class="subtitle">نظام الحماية المتقدم للخصوصية الرقمية</p>
+        </div>
+
+        <div class="terminal-window">
+            <div class="terminal-header">
+                <span>USB Privacy Shield Control Panel</span>
+                <div class="terminal-buttons">
+                    <div class="terminal-btn btn-close"></div>
+                    <div class="terminal-btn btn-minimize"></div>
+                    <div class="terminal-btn btn-maximize"></div>
+                </div>
+            </div>
+            
+            <div class="terminal-content">
+                <div class="command-section">
+                    <h2 class="command-title">
+                        <div class="command-icon"></div>
+                        خطوات التشغيل السريع
+                    </h2>
+                    <div class="command-grid">
+                        <div class="command-card">
+                            <div class="command-name">1. تشغيل launcher.bat</div>
+                            <div class="command-desc">تشغيل الملف الرئيسي كمسؤول لبدء النظام</div>
+                        </div>
+                        <div class="command-card">
+                            <div class="command-name">2. الموافقة على الصلاحيات</div>
+                            <div class="command-desc">السماح بالتشغيل كمسؤول عند الطلب</div>
+                        </div>
+                        <div class="command-card">
+                            <div class="command-name">3. استخدام الواجهة</div>
+                            <div class="command-desc">التفاعل مع الواجهة لتشغيل التطبيقات</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="command-section">
+                    <h2 class="command-title">
+                        <div class="command-icon"></div>
+                        التطبيقات المتاحة
+                    </h2>
+                    <div class="command-grid">
+                        <div class="command-card">
+                            <div class="command-name">Mullvad Browser</div>
+                            <div class="command-desc">متصفح محمي للخصوصية القصوى</div>
+                        </div>
+                        <div class="command-card">
+                            <div class="command-name">Brave Browser</div>
+                            <div class="command-desc">متصفح سريع مع حماية من الإعلانات</div>
+                        </div>
+                        <div class="command-card">
+                            <div class="command-name">Mullvad VPN</div>
+                            <div class="command-desc">شبكة افتراضية خاصة للحماية</div>
+                        </div>
+                        <div class="command-card">
+                            <div class="command-name">XAMPP Server</div>
+                            <div class="command-desc">خادم تطوير محلي متكامل</div>
+                        </div>
+                        <div class="command-card">
+                            <div class="command-name">Visual Studio Code</div>
+                            <div class="command-desc">محرر النصوص المتقدم للبرمجة</div>
+                        </div>
+                        <div class="command-card">
+                            <div class="command-name">Git Version Control</div>
+                            <div class="command-desc">نظام إدارة الإصدارات</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="command-section">
+                    <h2 class="command-title">
+                        <div class="command-icon"></div>
+                        الميزات المتقدمة
+                    </h2>
+                    <div class="command-grid">
+                        <div class="command-card">
+                            <div class="command-name">تثبيت من GitHub</div>
+                            <div class="command-desc">تحميل وتثبيت التطبيقات مباشرة</div>
+                        </div>
+                        <div class="command-card">
+                            <div class="command-name">حظر الإعلانات</div>
+                            <div class="command-desc">تعطيل الإعلانات على مستوى النظام</div>
+                        </div>
+                        <div class="command-card">
+                            <div class="command-name">إدارة البورتات</div>
+                            <div class="command-desc">مراقبة وإدارة اتصالات الشبكة</div>
+                        </div>
+                        <div class="command-card">
+                            <div class="command-name">أدوات ProtonMail</div>
+                            <div class="command-desc">بريد إلكتروني مشفر وآمن</div>
+                        </div>
+                        <div class="command-card">
+                            <div class="command-name">Proton Drive</div>
+                            <div class="command-desc">تخزين سحابي مشفر</div>
+                        </div>
+                        <div class="command-card">
+                            <div class="command-name">تنظيف البيانات</div>
+                            <div class="command-desc">حذف البيانات المؤقتة والتتبع</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="status-bar">
+                    <div class="status-line">[SYSTEM] USB Privacy Shield v2.0 - Active</div>
+                    <div class="status-line">[NETWORK] VPN Status: Ready</div>
+                    <div class="status-line">[PRIVACY] Ad Blocking: Enabled</div>
+                    <div class="status-line">[SECURITY] Background Apps: Controlled</div>
+                    <div class="status-line">[STATUS] System Ready<span class="blinking-cursor">_</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="warning-section">
+            <div class="warning-title">⚠️ تحذير أمني مهم</div>
+            <div class="warning-text">
+                تعطيل الحماية والتحديثات الأمنية قد يعرض جهازك للمخاطر الأمنية.
+                يُنصح بالاستخدام الحذر وإعادة تفعيل الحماية بعد الانتهاء من المهام المطلوبة.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create floating particles
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            document.getElementById('particles').appendChild(particle);
+            
+            setTimeout(() => {
+                particle.remove();
+            }, 25000);
+        }
+
+        // Generate particles periodically
+        setInterval(createParticle, 500);
+
+        // Add click effects to command cards
+        document.querySelectorAll('.command-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'translateY(-5px)';
+                }, 150);
+                
+                // Simulate command execution
+                const statusBar = document.querySelector('.status-bar');
+                const newLine = document.createElement('div');
+                newLine.className = 'status-line';
+                newLine.innerHTML = `[EXEC] ${this.querySelector('.command-name').textContent} - Initiated`;
+                statusBar.insertBefore(newLine, statusBar.lastElementChild);
+                
+                setTimeout(() => {
+                    newLine.innerHTML = `[EXEC] ${this.querySelector('.command-name').textContent} - Completed ✓`;
+                }, 1000);
+            });
+        });
+
+        // Simulate system activity
+        setInterval(() => {
+            const activities = [
+                '[MONITOR] Network traffic analyzed',
+                '[PRIVACY] Tracking cookies blocked',
+                '[SYSTEM] Memory optimized',
+                '[SECURITY] Threat scan completed'
+            ];
+            
+            const statusBar = document.querySelector('.status-bar');
+            const lines = statusBar.querySelectorAll('.status-line');
+            
+            if (lines.length > 8) {
+                lines[1].remove(); // Remove oldest line (keep first 4 static lines)
+            }
+            
+            const newLine = document.createElement('div');
+            newLine.className = 'status-line';
+            newLine.innerHTML = activities[Math.floor(Math.random() * activities.length)];
+            statusBar.insertBefore(newLine, statusBar.lastElementChild);
+        }, 3000);
+    </script>
+</body>
+</html>
